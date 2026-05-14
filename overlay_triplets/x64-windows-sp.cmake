@@ -5,7 +5,7 @@ set(VCPKG_LIBRARY_LINKAGE static)
 
 # Keep in sync with skyrim-platform\tools\dev_service\index.js, requiredVcpkgDlls constant
 # Note: at this moment, this list is empty. it was "spdlog" and "fmt" before, but now we use static linking for them.
-if(${PORT} MATCHES "this_port_is_not_real|this_port_is_not_real")
+if(${PORT} MATCHES "this_port_is_not_real|this_port_is_not_real|livekit-cpp-sdk")
   set(VCPKG_CRT_LINKAGE static) # VCPKG_CRT_LINKAGE should be the same for all ports
   set(VCPKG_LIBRARY_LINKAGE dynamic)
 endif()

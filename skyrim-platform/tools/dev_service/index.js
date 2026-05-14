@@ -184,6 +184,14 @@ const watchCallback = (_eventType, fileName) => {
           `${getBinaryDir()}/skymp5-server/cpp/${buildCfg}/MpClientPlugin.dll`,
           path.join(distDir, "Data/SKSE/Plugins")
         );
+        // livekit.dll and livekit_ffi.dll are runtime dependencies of MpClientPlugin.dll (voice chat).
+        // They must be in the game root so SetDllDirectoryA(".") can find them.
+        for (const dllName of ["livekit.dll", "livekit_ffi.dll"]) {
+          const dll = `${getBinaryDir()}/skymp5-server/cpp/${buildCfg}/${dllName}`;
+          if (fs.existsSync(dll)) {
+            cp(dll, distDir);
+          }
+        }
         cp(
           path.join(
             sourceDir,

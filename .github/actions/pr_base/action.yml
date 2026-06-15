@@ -361,6 +361,7 @@ runs:
       shell: powershell
 
     - uses: actions/upload-artifact@v7
+      if: ${{ always() }}
       with:
         name: ${{ inputs.DIST_ARTIFACT_NAME }}
         path: ${{github.workspace}}/build/dist
@@ -381,6 +382,7 @@ runs:
         archive: false
 
     - uses: actions/upload-artifact@v7
+      if: ${{ always() }}
       with:
         name: ${{ inputs.SERVER_DIST_ARTIFACT_NAME }}
         path: ${{github.workspace}}/build/dist/server

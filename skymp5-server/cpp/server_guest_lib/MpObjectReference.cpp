@@ -1777,8 +1777,10 @@ void MpObjectReference::InitScripts()
           scriptNames.push_back(script.scriptName);
         }
       } else if (auto wst = GetParent())
-        wst->logger->warn("Script '{}' not found in the script storage",
-                          script.scriptName);
+        // Fires for every vanilla script absent from the storage — hundreds of
+        // lines per cell load. Keep it out of the default log level.
+        wst->logger->trace("Script '{}' not found in the script storage",
+                           script.scriptName);
     }
   }
 
@@ -1791,8 +1793,8 @@ void MpObjectReference::InitScripts()
     auto lookupRes =
       GetParent()->GetEspm().GetBrowser().LookupById(cellOrWorld);
     if (lookupRes.rec && lookupRes.rec->GetType() == "WRLD") {
-      spdlog::info("Skipping non-Sweet scripts for exterior form {:x}",
-                   cellOrWorld);
+      spdlog::trace("Skipping non-Sweet scripts for exterior form {:x}",
+                    cellOrWorld);
       scriptNames.erase(std::remove_if(scriptNames.begin(), scriptNames.end(),
                                        [](const std::string& val) {
                                          auto kPrefix = "Sweet";

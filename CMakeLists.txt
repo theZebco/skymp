@@ -71,14 +71,19 @@ else()
   list(APPEND VCPKG_MANIFEST_FEATURES "prebuilt-nodejs")
 endif()
 
+option(SKYMP_VOICE_CHAT "Enable voice chat via LiveKit" OFF)
+if(SKYMP_VOICE_CHAT)
+  list(APPEND VCPKG_MANIFEST_FEATURES "voice-chat")
+endif()
+
 cmake_minimum_required(VERSION 3.19)
 project(skymp)
 enable_testing()
 
 # Check the Visual Studio version
 if(MSVC)
-  if(NOT CMAKE_GENERATOR MATCHES "Visual Studio 17 2022")
-    message(FATAL_ERROR "This project requires \"Visual Studio 17 2022\". But the generator was \"${CMAKE_GENERATOR}\"")
+  if(NOT (CMAKE_GENERATOR MATCHES "Visual Studio 17 2022" OR CMAKE_GENERATOR MATCHES "Visual Studio 18 2026"))
+    message(FATAL_ERROR "This project requires \"Visual Studio 17 2022\" or newer. But the generator was \"${CMAKE_GENERATOR}\"")
   endif()
 endif()
 

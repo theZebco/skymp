@@ -10,6 +10,15 @@ const VOICE_MODE_GLOBAL = 1;
 // Default push-to-talk key (V = DxScanCode 47)
 const DEFAULT_PTT_KEY = 47;
 
+// Key to cycle voice mode whisper -> local -> yell (B = DxScanCode 48)
+const VOICE_MODE_KEY = 48;
+
+// Proximity range presets the player cycles between. The names match the new UI
+// HUD (sky-mp-ui data/voiceModes.ts) and PROTOCOL `voiceModeChanged`.
+type VoiceModeName = "whisper" | "local" | "yell";
+const VOICE_MODE_ORDER: VoiceModeName[] = ["whisper", "local", "yell"];
+const DEFAULT_RANGES: Record<VoiceModeName, number> = { whisper: 600, local: 4000, yell: 12000 };
+
 // Minimum interval between reconnect attempts (ms)
 const RECONNECT_COOLDOWN_MS = 5000;
 
@@ -20,6 +29,11 @@ export class VoiceChatService extends ClientListener {
   private lastReconnectRequestTime = 0;
   // Maps LiveKit identity -> server-side actor refrId
   private voiceParticipantMap = new Map<string, number>();
+
+  // Voice-mode cycling (whisper/local/yell) — proximity range presets + HUD sync.
+  private ranges: Record<VoiceModeName, number> = { ...DEFAULT_RANGES };
+  private modeIndex = VOICE_MODE_ORDER.indexOf("local");
+  private modeKeyPressed = false;
 
   constructor(private sp: Sp, private controller: CombinedController) {
     super();
@@ -35,6 +49,8 @@ export class VoiceChatService extends ClientListener {
     this.controller.on("update", () => {
       try { this.handlePTT(); }
       catch (e) { logError(this, "handlePTT error: " + String(e)); }
+      try { this.handleModeCycle(); }
+      catch (e) { logError(this, "handleModeCycle error: " + String(e)); }
       try { this.updateSpatialPositions(); }
       catch (e) { logError(this, "updateSpatialPositions error: " + String(e)); }
     });
@@ -73,6 +89,9 @@ export class VoiceChatService extends ClientListener {
     inputGain?: number;
     outputVolume?: number;
     voiceRange?: number;
+    rangeWhisper?: number;
+    rangeLocal?: number;
+    rangeYell?: number;
     noiseGateEnabled?: boolean;
     noiseGateThreshold?: number;
     normalizationEnabled?: boolean;
@@ -134,6 +153,15 @@ export class VoiceChatService extends ClientListener {
     if (config.normalizationTarget !== undefined && this.sp.mpClientPlugin.setVoiceNormalizationTarget) {
       this.sp.mpClientPlugin.setVoiceNormalizationTarget(config.normalizationTarget);
     }
+
+    // Pick up whisper/local/yell range presets (fall back to defaults), then
+    // apply the initial mode (local) and sync the HUD voice indicator.
+    if (typeof config.rangeWhisper === "number") this.ranges.whisper = config.rangeWhisper;
+    if (typeof config.rangeLocal === "number") this.ranges.local = config.rangeLocal;
+    else if (typeof config.voiceRange === "number") this.ranges.local = config.voiceRange;
+    if (typeof config.rangeYell === "number") this.ranges.yell = config.rangeYell;
+    this.modeIndex = VOICE_MODE_ORDER.indexOf("local");
+    this.applyVoiceMode();
   }
 
   private onVoiceParticipantMap(data: {
@@ -249,11 +277,58 @@ export class VoiceChatService extends ClientListener {
       this.pttPressed = true;
       logTrace(this, "PTT pressed — start talking");
       this.sp.mpClientPlugin.startTalking!();
+      this.dispatchBrowser("skymp5-client:startTalking");
     } else if (!keyPressed && this.pttPressed) {
       // Key just released — stop talking
       this.pttPressed = false;
       logTrace(this, "PTT released — stop talking");
       this.sp.mpClientPlugin.stopTalking!();
+      this.dispatchBrowser("skymp5-client:stopTalking");
+    }
+  }
+
+  // Cycle whisper -> local -> yell on a key edge; apply the range preset and
+  // tell the HUD via `skymp5-client:voiceModeChanged`.
+  private handleModeCycle() {
+    if (!this.voiceChatAvailable) return;
+    if (!this.sp.mpClientPlugin.isVoiceChatInitialized?.()) return;
+
+    let down: boolean;
+    try {
+      down = this.sp.Input.isKeyPressed(VOICE_MODE_KEY);
+    } catch (_) {
+      return;
+    }
+    if (down && !this.modeKeyPressed) {
+      this.modeKeyPressed = true;
+      this.modeIndex = (this.modeIndex + 1) % VOICE_MODE_ORDER.length;
+      this.applyVoiceMode();
+    } else if (!down && this.modeKeyPressed) {
+      this.modeKeyPressed = false;
+    }
+  }
+
+  // Apply the current mode's range to the native plugin and notify the HUD.
+  private applyVoiceMode() {
+    const name = VOICE_MODE_ORDER[this.modeIndex];
+    const range = this.ranges[name];
+    if (this.sp.mpClientPlugin.setVoiceRange) {
+      try { this.sp.mpClientPlugin.setVoiceRange(range); }
+      catch (e) { logTrace(this, `setVoiceRange error: ${String(e)}`); }
+    }
+    logTrace(this, `Voice mode -> ${name} (range ${range})`);
+    this.dispatchBrowser("skymp5-client:voiceModeChanged", { name });
+  }
+
+  // Dispatch a CustomEvent into the CEF browser UI (same pattern as browserService).
+  private dispatchBrowser(eventName: string, detail?: unknown) {
+    try {
+      const payload = detail === undefined ? "{}" : JSON.stringify({ detail });
+      this.sp.browser.executeJavaScript(
+        `window.dispatchEvent(new CustomEvent('${eventName}', ${payload}))`
+      );
+    } catch (e) {
+      logTrace(this, `dispatchBrowser('${eventName}') error: ${String(e)}`);
     }
   }
 

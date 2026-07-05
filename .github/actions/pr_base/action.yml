@@ -247,6 +247,7 @@ runs:
         $vcpkg_chainload_toolchain_arg = if ('${{ inputs.EMSCRIPTEN }}' -eq 'true') { '-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE="${{github.workspace}}/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"' } else { '' }
         $vcpkg_triplet_arg = if ('${{ inputs.EMSCRIPTEN }}' -eq 'true') { '-DVCPKG_TARGET_TRIPLET=wasm32-emscripten' } else { '' }
         $prepare_nexus_archives_arg = if ('${{ inputs.SP_NEXUS_ARTIFACT_NAME}}' -eq 'nope') { '-DPREPARE_NEXUS_ARCHIVES=OFF' } else { '-DPREPARE_NEXUS_ARCHIVES=ON' }
+        $voice_chat_arg = if ($env:RUNNER_OS -eq 'Windows') { '-DSKYMP_VOICE_CHAT=ON' } else { '-DSKYMP_VOICE_CHAT=OFF' }
 
         $cmake_command_full = "$cmake_command "
         $cmake_command_full += "-B ${{github.workspace}}/build "
@@ -259,6 +260,7 @@ runs:
         $cmake_command_full += "-DBUILD_FRONT=${{ inputs.BUILD_SKYMP5_FRONT }} "
         $cmake_command_full += "-DSKYMP5_FRONT_REPO_PAT=${{ inputs.SKYMP5_FRONT_PAT }} "
         $cmake_command_full += "$prepare_nexus_archives_arg "
+        $cmake_command_full += "$voice_chat_arg "
         $cmake_command_full += "-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} "
         $cmake_command_full += "-DSKYRIM_VR=${{ inputs.SKYRIM_VR_FLAG }} "
         $cmake_command_full += "$cppcov_path_arg "

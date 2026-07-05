@@ -26,6 +26,16 @@
   },
   {
     "configurationTags": [
+      "Win32",
+      "VoiceChat"
+    ],
+    "expectedFiles": [
+      "client/livekit.dll",
+      "client/livekit_ffi.dll"
+    ]
+  },
+  {
+    "configurationTags": [
       "MacOS"
     ],
     "expectedFiles": [

@@ -31,9 +31,9 @@ export class Spawn implements System {
           +startPoints[idx].worldOrCell,
           userProfileId
         );
-        this.log("Creating character", actorId.toString(16));
+        this.log("Creating placeholder character", actorId.toString(16));
         ctx.svr.setUserActor(userId, actorId);
-        ctx.svr.setRaceMenuOpen(actorId, true);
+        // Race Menu is opened by gamemode characterSelect when the user clicks Create.
       }
 
       const mp = ctx.svr as unknown as Mp;

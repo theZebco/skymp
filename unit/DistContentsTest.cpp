@@ -78,6 +78,10 @@ auto GetExpectedPaths(const nlohmann::json& j)
   configurationTags.insert("UI");
 #endif
 
+#ifdef SKYMP_VOICE_CHAT
+  configurationTags.insert("VoiceChat");
+#endif
+
   if (getenv("CI")) {
     configurationTags.insert("CI");
   }

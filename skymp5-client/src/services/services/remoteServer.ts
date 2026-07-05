@@ -427,9 +427,8 @@ export class RemoteServer extends ClientListener {
     if (msg.props && !msg.props.isHostedByOther) {
     }
 
-    if (msg.props && msg.props.isRaceMenuOpen && msg.isMe) {
-      this.onSetRaceMenuOpenMessage({ message: { t: MsgType.SetRaceMenuOpen, open: true } });
-    }
+    // Race Menu opens only from explicit SetRaceMenuOpen packets (gamemode
+    // characterSelect after the user clicks Create), not from createActor props.
 
     const numSetInventory = this.numSetInventory;
 

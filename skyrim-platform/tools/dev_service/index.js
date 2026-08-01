@@ -192,13 +192,7 @@ const watchCallback = (_eventType, fileName) => {
             cp(dll, distDir);
           }
         }
-        cp(
-          path.join(
-            sourceDir,
-            "tools/system_polyfill/dist/___systemPolyfill.js"
-          ),
-          path.join(distDir, "Data/Platform/Distribution")
-        );
+        // (upstream dropped the system-polyfill copy in #2711)
         fs.copySync(
           path.join(sourceDir, "tools/plugin-example"),
           path.join(distDir, "Data/Platform/plugin-example")

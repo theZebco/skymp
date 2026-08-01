@@ -192,7 +192,10 @@ MpChangeForm MpChangeForm::JsonToChangeForm(simdjson::dom::element& element)
 
   ReadEx(element, isHarvested, &res.isHarvested);
   ReadEx(element, isOpen, &res.isOpen);
-  ReadEx(element, isLocked, &res.isLocked);
+  if (auto v = GetValueFromJson(element, isLocked);
+      v.error() == simdjson::error_code::SUCCESS) {
+    ReadEx(element, isLocked, &res.isLocked);
+  }
   ReadEx(element, baseContainerAdded, &res.baseContainerAdded);
   ReadEx(element, nextRelootDatetime, &res.nextRelootDatetime);
   ReadEx(element, isDisabled, &res.isDisabled);

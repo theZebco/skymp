@@ -42,6 +42,7 @@ export interface CreateActorMessageMainProps {
 
 export interface CreateActorMessageAdditionalProps {
     isOpen?: boolean;
+    isLocked?: boolean;
     isHarvested?: boolean;
     setNodeTextureSet?: SetNodeTextureSetEntry[];
     setNodeScale?: SetNodeScaleEntry[];

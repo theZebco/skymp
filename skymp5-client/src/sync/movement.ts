@@ -19,6 +19,7 @@ export interface AnimationVariables {
   healthPercentage: number;
   lookAt?: NiPoint3;
   speed: number;
+  mountRefrId?: number;
 }
 
 export type Movement = Transform & AnimationVariables;

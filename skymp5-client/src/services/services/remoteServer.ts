@@ -291,6 +291,7 @@ export class RemoteServer extends ClientListener {
               ModelApplyUtils.applyModelInventory(refr, msg.props.inventory);
             }
             ModelApplyUtils.applyModelIsOpen(refr, !!msg.props['isOpen']);
+            ModelApplyUtils.applyModelIsLocked(refr, !!msg.props['isLocked']);
             ModelApplyUtils.applyModelIsHarvested(
               refr,
               !!msg.props['isHarvested'],
@@ -740,6 +741,8 @@ export class RemoteServer extends ClientListener {
           ModelApplyUtils.applyModelInventory(refr, msgData as Inventory);
         } else if (msg.propName === 'isOpen') {
           ModelApplyUtils.applyModelIsOpen(refr, !!msgData);
+        } else if (msg.propName === 'isLocked') {
+          ModelApplyUtils.applyModelIsLocked(refr, !!msgData);
         } else if (msg.propName === 'isHarvested') {
           ModelApplyUtils.applyModelIsHarvested(refr, !!msgData);
         } else if (msg.propName === 'disabled') {

@@ -352,6 +352,7 @@ export class FormView {
     if (now - this.lastOpenApply > 133) {
       this.lastOpenApply = now;
       ModelApplyUtils.applyModelIsOpen(refr, !!model.isOpen);
+      ModelApplyUtils.applyModelIsLocked(refr, !!model.isLocked);
     }
     if (!this.isSetNodeScaleApplied) {
       this.isSetNodeScaleApplied = true;

@@ -100,6 +100,7 @@ public:
   const Inventory& GetInventory() const;
   const bool& IsHarvested() const;
   const bool& IsOpen() const;
+  const bool& IsLocked() const;
   const bool& IsDisabled() const;
   const bool& IsDeleted() const;
   const uint32_t& GetCount() const;
@@ -127,6 +128,7 @@ public:
                 SetAngleMode setAngleMode = SetAngleMode::Other);
   void SetHarvested(bool harvested);
   void SetOpen(bool open);
+  void SetLocked(bool locked);
   void PutItem(MpActor& actor, const Inventory::Entry& entry);
   void TakeItem(MpActor& actor, const Inventory::Entry& entry);
   void SetRelootTime(std::chrono::system_clock::duration newRelootTime);

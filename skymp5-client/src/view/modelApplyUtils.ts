@@ -34,6 +34,13 @@ export class ModelApplyUtils {
     }
   }
 
+  static applyModelIsLocked(refr: ObjectReference, isLocked: boolean) {
+    if (refr.isLocked() === isLocked) {
+      return;
+    }
+    refr.lock(isLocked, false);
+  }
+
   static applyModelIsDisabled(refr: ObjectReference, disabled: boolean): void {
     const wasDisabled: boolean = refr.isDisabled();
     if (wasDisabled == disabled) {

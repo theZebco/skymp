@@ -34,6 +34,7 @@ nlohmann::json MpChangeForm::ToJson(const MpChangeForm& changeForm)
   res["inv"] = changeForm.inv.ToJson();
   res["isHarvested"] = changeForm.isHarvested;
   res["isOpen"] = changeForm.isOpen;
+  res["isLocked"] = changeForm.isLocked;
   res["baseContainerAdded"] = changeForm.baseContainerAdded;
   res["nextRelootDatetime"] = changeForm.nextRelootDatetime;
   res["isDisabled"] = changeForm.isDisabled;
@@ -126,6 +127,7 @@ MpChangeForm MpChangeForm::JsonToChangeForm(simdjson::dom::element& element)
   static const JsonPointer inv("inv");
   static const JsonPointer isHarvested("isHarvested");
   static const JsonPointer isOpen("isOpen");
+  static const JsonPointer isLocked("isLocked");
   static const JsonPointer baseContainerAdded("baseContainerAdded");
   static const JsonPointer nextRelootDatetime("nextRelootDatetime");
   static const JsonPointer isDisabled("isDisabled");
@@ -190,6 +192,7 @@ MpChangeForm MpChangeForm::JsonToChangeForm(simdjson::dom::element& element)
 
   ReadEx(element, isHarvested, &res.isHarvested);
   ReadEx(element, isOpen, &res.isOpen);
+  ReadEx(element, isLocked, &res.isLocked);
   ReadEx(element, baseContainerAdded, &res.baseContainerAdded);
   ReadEx(element, nextRelootDatetime, &res.nextRelootDatetime);
   ReadEx(element, isDisabled, &res.isDisabled);

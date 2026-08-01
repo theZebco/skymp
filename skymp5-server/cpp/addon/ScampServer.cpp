@@ -345,9 +345,17 @@ ScampServer::ScampServer(const Napi::CallbackInfo& info)
       ? std::string(kNetworkingPasswordPrefix) +
         static_cast<std::string>(serverSettings["password"])
       : std::string(kNetworkingPasswordPrefix);
-    auto realServer =
-      Networking::CreateServer(listenHost.c_str(), listenPort, maxPlayers,
-                               password.data(), promRegistry);
+    int connectionTimeoutMs = Networking::kDefaultTimeoutTimeMs;
+    if (serverSettings.contains("connectionTimeoutMs") &&
+        serverSettings["connectionTimeoutMs"].is_number_integer()) {
+      connectionTimeoutMs =
+        std::max(1000, static_cast<int>(serverSettings["connectionTimeoutMs"]));
+      logger->info("Connection timeout set to {} ms", connectionTimeoutMs);
+    }
+
+    auto realServer = Networking::CreateServer(
+      listenHost.c_str(), listenPort, maxPlayers, password.data(), promRegistry,
+      connectionTimeoutMs);
 
     static_assert(kMockServerIdx == 1);
     server = Networking::CreateCombinedServer({ realServer, serverMock });

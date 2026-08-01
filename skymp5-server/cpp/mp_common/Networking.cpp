@@ -136,13 +136,13 @@ private:
 class Server : public Networking::IServer
 {
 public:
-  constexpr static int timeoutTimeMs = 60000;
-
   Server(const char* listenAddress, unsigned short port_,
          unsigned short maxConnections_, const char* password_,
-         std::shared_ptr<prometheus::Registry> promRegistry)
+         std::shared_ptr<prometheus::Registry> promRegistry,
+         int timeoutTimeMs_)
     : maxConnections(maxConnections_)
     , password(password_)
+    , timeoutTimeMs(timeoutTimeMs_)
     , metrics{ Metrics::Init(promRegistry) }
   {
     if (maxConnections > kMaxPlayers) {
@@ -260,6 +260,7 @@ public:
 private:
   const unsigned short maxConnections;
   const std::string password;
+  const int timeoutTimeMs;
   std::unique_ptr<RakPeerInterface> peer;
   std::unique_ptr<SocketDescriptor> socket;
   std::unique_ptr<IdManager> idManager;
@@ -326,10 +327,10 @@ std::shared_ptr<Networking::IClient> Networking::CreateClient(
 std::shared_ptr<Networking::IServer> Networking::CreateServer(
   const char* listenAddress, unsigned short port,
   unsigned short maxConnections, const char* password,
-  std::shared_ptr<prometheus::Registry> promRegistry)
+  std::shared_ptr<prometheus::Registry> promRegistry, int timeoutTimeMs)
 {
   return std::make_shared<Server>(listenAddress, port, maxConnections,
-                                  password, promRegistry);
+                                  password, promRegistry, timeoutTimeMs);
 }
 
 void Networking::HandlePacketClientside(Networking::IClient::OnPacket onPacket,

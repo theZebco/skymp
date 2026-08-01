@@ -33,6 +33,7 @@ struct UpdateMovementMessage : public MessageBase<UpdateMovementMessage>
         .Serialize("isBlocking", isBlocking)
         .Serialize("isWeapDrawn", isWeapDrawn)
         .Serialize("isDead", isDead)
+        .Serialize("mountRefrId", mountRefrId)
         .Serialize("lookAt", lookAt);
     }
 
@@ -50,6 +51,7 @@ struct UpdateMovementMessage : public MessageBase<UpdateMovementMessage>
     bool isBlocking = false;
     bool isWeapDrawn = false;
     bool isDead = false;
+    std::optional<uint32_t> mountRefrId = std::nullopt;
     std::optional<std::array<float, 3>> lookAt = std::nullopt;
   };
 

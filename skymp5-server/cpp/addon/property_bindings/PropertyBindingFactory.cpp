@@ -11,6 +11,7 @@
 #include "InventoryBinding.h"
 #include "IsDeadBinding.h"
 #include "IsDisabledBinding.h"
+#include "IsLockedBinding.h"
 #include "IsOnlineBinding.h"
 #include "IsOpenBinding.h"
 #include "LastAnimEventBinding.h"
@@ -39,6 +40,7 @@ PropertyBindingFactory::CreateStandardPropertyBindings()
   result["inventory"] = std::make_shared<InventoryBinding>();
   result["isDead"] = std::make_shared<IsDeadBinding>();
   result["isDisabled"] = std::make_shared<IsDisabledBinding>();
+  result["isLocked"] = std::make_shared<IsLockedBinding>();
   result["isOnline"] = std::make_shared<IsOnlineBinding>();
   result["isOpen"] = std::make_shared<IsOpenBinding>();
   result["locationalData"] = std::make_shared<LocationalDataBinding>();

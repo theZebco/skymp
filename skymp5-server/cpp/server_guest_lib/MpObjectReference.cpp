@@ -271,6 +271,11 @@ const bool& MpObjectReference::IsOpen() const
   return ChangeForm().isOpen;
 }
 
+const bool& MpObjectReference::IsLocked() const
+{
+  return ChangeForm().isLocked;
+}
+
 const bool& MpObjectReference::IsDisabled() const
 {
   return ChangeForm().isDisabled;
@@ -378,6 +383,10 @@ void MpObjectReference::VisitProperties(CreateActorMessage& message,
 
   if (IsOpen()) {
     message.props.isOpen = true;
+  }
+
+  if (IsLocked()) {
+    message.props.isLocked = true;
   }
 
   if (auto actor = AsActor(); actor && actor->IsDead()) {
@@ -626,6 +635,17 @@ void MpObjectReference::SetOpen(bool open)
       [&](MpChangeFormREFR& changeForm) { changeForm.isOpen = open; });
     SendMessageToActorListeners(
       CreatePropertyMessage_(this, "isOpen", open ? "true" : "false"), true);
+  }
+}
+
+void MpObjectReference::SetLocked(bool locked)
+{
+  if (locked != ChangeForm().isLocked) {
+    EditChangeForm(
+      [&](MpChangeFormREFR& changeForm) { changeForm.isLocked = locked; });
+    SendMessageToActorListeners(
+      CreatePropertyMessage_(this, "isLocked", locked ? "true" : "false"),
+      true);
   }
 }
 

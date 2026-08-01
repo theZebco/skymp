@@ -74,6 +74,7 @@ public:
 
   bool isHarvested = false;
   bool isOpen = false;
+  bool isLocked = false;
   bool baseContainerAdded = false;
   uint64_t nextRelootDatetime = 0;
   bool isDisabled = false;
